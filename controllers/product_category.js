@@ -10,9 +10,8 @@ const getCategories = async () => {
       categories.push(product.category);
     }
   });
-  return categories
+  return categories;
 };
-
 
 module.exports = {
   getCategories,

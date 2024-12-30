@@ -8,14 +8,15 @@ const {
   addNewProduct,
   updateProduct,
   deleteProduct,
-  getCategory,
 } = require("../controllers/product");
 
 //the routes to get all the products(/products)
 router.get("/", async (req, res) => {
   try {
     const category = req.query.category;
-    const products = await getProducts(category);
+    const page = req.query.page;
+    const per_page = req.query.per_page;
+    const products = await getProducts(category, page, per_page);
     res.status(200).send(products);
   } catch (error) {
     res.status(400).send(error._message);
@@ -45,7 +46,7 @@ router.post("/", async (req, res) => {
     const description = req.body.description;
     const price = req.body.price;
     const category = req.body.category;
-
+    console.log(req.body);
     if (!name || !price || !category) {
       return res.status(400).send({
         error: "Required data is missing",
@@ -79,6 +80,7 @@ router.put("/:id", async (req, res) => {
     );
     res.status(200).send(updatedProduct);
   } catch (error) {
+    
     res.status(400).send({
       error: error._message,
     });
@@ -102,9 +104,9 @@ router.delete("/:id", async (req, res) => {
 });
 
 //get all products by category
-router.get("/:category", async (req, res) => {
-  const category = req.body.category;
-  const product = await getCategory(category);
-  res.status(200).send(product);
-});
+// router.get("/:category", async (req, res) => {
+//   const category = req.body.category;
+//   const product = await getCategory(category);
+//   res.status(200).send(product);
+// });
 module.exports = router;

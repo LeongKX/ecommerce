@@ -1,3 +1,5 @@
+require("dotenv").config();
+
 const express = require("express");
 const mongoose = require("mongoose");
 const cors = require("cors");
@@ -24,6 +26,8 @@ const categoryRouter = require("./routes/product_category");
 
 app.use("/products", productRouter);
 app.use("/categories", categoryRouter);
+app.use("/orders", require("./routes/order"));
+app.use("/payment", require("./routes/payment"));
 
 app.listen(5555, () => {
   console.log("Server is running ar http://localhost:5555");
