@@ -4,11 +4,12 @@ const router = express.Router();
 // import all the order functions
 const {
   getOrders,
-  getOrder,
   addNewOrder,
   updateOrder,
   deleteOrder,
 } = require("../controllers/order");
+
+const { isValidUser, isAdmin } = require("../middleware/auth");
 
 /*
     GET /orders
@@ -19,7 +20,7 @@ const {
 */
 
 // create new order
-router.post("/", async (req, res) => {
+router.post("/", isValidUser, async (req, res) => {
   try {
     // const customerName = req.body.customerName;
     // const customerEmail = req.body.customerEmail;
@@ -48,23 +49,25 @@ router.post("/", async (req, res) => {
 });
 
 //get all orders
-router.get("/", async (req, res) => {
+router.get("/", isValidUser, async (req, res) => {
   try {
-    const orders = await getOrders();
+    const email = req.user.email;
+    const role = req.user.role;
+    const orders = await getOrders(email, role);
     res.status(200).send(orders);
   } catch (error) {
+    console.log
     res.status(400).send(error._message);
   }
 });
 
-module.exports = router;
-
 //delete order
-router.delete("/:id", async (req, res) => {
+router.delete("/:id", isAdmin, async (req, res) => {
   try {
     const id = req.params.id;
     await deleteOrder(id);
     res.status(200).send({
+      status: "success",
       message: `Product with the provide id #${id} has been deleted`,
     });
   } catch (error) {
@@ -76,7 +79,7 @@ router.delete("/:id", async (req, res) => {
 });
 
 //update order status
-router.put("/:id", async (req, res) => {
+router.put("/:id", isAdmin, async (req, res) => {
   try {
     const id = req.params.id;
     const { status } = req.body;
@@ -88,3 +91,5 @@ router.put("/:id", async (req, res) => {
     });
   }
 });
+
+module.exports = router;

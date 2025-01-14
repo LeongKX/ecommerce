@@ -1,5 +1,6 @@
 const express = require("express");
-
+const mongoose = require("mongoose");
+//create a router for products
 const router = express.Router();
 
 const {
@@ -10,6 +11,7 @@ const {
   deleteProduct,
 } = require("../controllers/product");
 
+const { isValidUser, isAdmin } = require("../middleware/auth");
 //the routes to get all the products(/products)
 router.get("/", async (req, res) => {
   try {
@@ -19,6 +21,7 @@ router.get("/", async (req, res) => {
     const products = await getProducts(category, page, per_page);
     res.status(200).send(products);
   } catch (error) {
+    console.log(error);
     res.status(400).send(error._message);
   }
 });
@@ -40,12 +43,13 @@ router.get("/:id", async (req, res) => {
 
 //add product
 //POST http://localhost:5555/products
-router.post("/", async (req, res) => {
+router.post("/", isAdmin, async (req, res) => {
   try {
     const name = req.body.name;
     const description = req.body.description;
     const price = req.body.price;
     const category = req.body.category;
+    const image = req.body.image;
     console.log(req.body);
     if (!name || !price || !category) {
       return res.status(400).send({
@@ -54,7 +58,13 @@ router.post("/", async (req, res) => {
     }
 
     //pass in all the data to addNewProduct function
-    const newProduct = await addNewProduct(name, description, price, category);
+    const newProduct = await addNewProduct(
+      name,
+      description,
+      price,
+      category,
+      image
+    );
     res.status(200).send(newProduct);
   } catch (error) {
     res.status(400).send(error._message);
@@ -63,24 +73,25 @@ router.post("/", async (req, res) => {
 
 //update product
 //PUT http://localhost:5555/products/fhuhfu
-router.put("/:id", async (req, res) => {
+router.put("/:id", isAdmin, async (req, res) => {
   try {
     const id = req.params.id;
     const name = req.body.name;
     const description = req.body.description;
     const price = req.body.price;
     const category = req.body.category;
+    const image = req.body.image;
 
     const updatedProduct = await updateProduct(
       id,
       name,
       description,
       price,
-      category
+      category,
+      image
     );
     res.status(200).send(updatedProduct);
   } catch (error) {
-    
     res.status(400).send({
       error: error._message,
     });
@@ -89,7 +100,7 @@ router.put("/:id", async (req, res) => {
 
 //delete product
 //DELETE http://localhost:5555/products/afssgsgq
-router.delete("/:id", async (req, res) => {
+router.delete("/:id", isAdmin, async (req, res) => {
   try {
     const id = req.params.id;
     await deleteProduct(id);

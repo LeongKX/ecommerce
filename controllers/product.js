@@ -7,35 +7,34 @@ const getProducts = async (category, page = 1, per_page = 6) => {
     filter.category = category;
   }
   const products = await Product.find(filter)
+    .populate("category")
     .limit(per_page)
     .skip((page - 1) * per_page)
-    .sort({_id: -1});
+    .sort({ _id: -1 });
   return products;
 };
 
-
-
-
 //get one product
 const getProduct = async (id) => {
-  const product = await Product.find(id);
+  const product = await Product.findById(id);
   return product;
 };
 
 //add new product
-const addNewProduct = async (name, description, price, category) => {
+const addNewProduct = async (name, description, price, category, image) => {
   const newProduct = new Product({
     name,
     description,
     price,
     category,
+    image,
   });
   await newProduct.save();
   return newProduct;
 };
 
 //update product
-const updateProduct = async (id, name, description, price, category) => {
+const updateProduct = async (id, name, description, price, category, image) => {
   const updateProduct = await Product.findByIdAndUpdate(
     id,
     {
@@ -43,6 +42,7 @@ const updateProduct = async (id, name, description, price, category) => {
       description,
       price,
       category,
+      image,
     },
     { new: true }
   );
