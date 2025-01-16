@@ -17,7 +17,7 @@ app.use(cors());
 app.use("/api/uploads", express.static("uploads"));
 
 mongoose
-  .connect("mongodb://localhost:27017/ecommerce")
+  .connect(process.env.MONGODB_URL + "/ecommerce")
   .then(() => {
     console.log("MongoDB is connected");
   })
