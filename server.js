@@ -40,5 +40,5 @@ app.use("/api/auth", require("./routes/user"));
 app.use("/api/image", require("./routes/image"));
 
 app.listen(5555, () => {
-  console.log("Server is running ar http://localhost:5555");
+  console.log("Server is running at http://localhost:5555");
 });
